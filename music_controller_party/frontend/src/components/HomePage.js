@@ -22,6 +22,7 @@ export default class HomePage extends Component {
     this.state = {
       roomCode: null,
     };
+    this.clearRoomCode = this.clearRoomCode.bind(this);
   }
 
   async componentDidMount() {
@@ -34,12 +35,12 @@ export default class HomePage extends Component {
       });
   }
 
-  renderHomeSection = () =>{
+  renderHomePage() {
     return (
       <Grid container spacing={3}>
         <Grid item xs={12} align="center">
-          <Typography variant="h3" component="h3">
-            Spotify House Party
+          <Typography variant="h3" compact="h3">
+            House Party
           </Typography>
         </Grid>
         <Grid item xs={12} align="center">
@@ -50,26 +51,41 @@ export default class HomePage extends Component {
             <Button color="secondary" to="/create" component={Link}>
               Create a Room
             </Button>
-            
-          </ButtonGroup>      
+          </ButtonGroup>
         </Grid>
       </Grid>
-
     );
+  }
+
+  clearRoomCode() {
+    this.setState({
+      roomCode: null,
+    });
   }
 
   render() {
     return (
       <Router>
         <Switch>
-          <Route exact path="/" render={()=>{
-            return this.state.roomCode ?  (<Redirect to={`/room/${this.state.roomCode}`}/> ) 
-            : (this.renderHomeSection());
-
-          }}/>
-          <Route exact path="/join" component={RoomJoinPage} />
-          <Route exact path="/create" component={CreateRoomPage} />
-          <Route path="/room/:roomCode" component={Room} />
+          <Route
+            exact
+            path="/"
+            render={() => {
+              return this.state.roomCode ? (
+                <Redirect to={`/room/${this.state.roomCode}`} />
+              ) : (
+                this.renderHomePage()
+              );
+            }}
+          />
+          <Route path="/join" component={RoomJoinPage} />
+          <Route path="/create" component={CreateRoomPage} />
+          <Route
+            path="/room/:roomCode"
+            render={(props) => {
+              return <Room {...props} leaveRoomCallback={this.clearRoomCode} />;
+            }}
+          />
         </Switch>
       </Router>
     );
